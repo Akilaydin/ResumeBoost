@@ -29,14 +29,16 @@ partial class MainForm
     private void InitializeComponent()
     {
         components = new System.ComponentModel.Container();
+        System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
         webView = new Microsoft.Web.WebView2.WinForms.WebView2();
         statusStrip = new StatusStrip();
-        statusLabel = new Label();
+        statusLabel = new ToolStripStatusLabel();
         timerStart = new System.Windows.Forms.Timer(components);
         timerMain = new System.Windows.Forms.Timer(components);
         timerLong = new System.Windows.Forms.Timer(components);
         notifyIcon = new NotifyIcon(components);
         ((System.ComponentModel.ISupportInitialize)webView).BeginInit();
+        statusStrip.SuspendLayout();
         SuspendLayout();
         // 
         // webView
@@ -53,6 +55,7 @@ partial class MainForm
         // 
         // statusStrip
         // 
+        statusStrip.Items.AddRange(new ToolStripItem[] { statusLabel });
         statusStrip.Location = new Point(0, 428);
         statusStrip.Name = "statusStrip";
         statusStrip.Size = new Size(800, 22);
@@ -61,12 +64,9 @@ partial class MainForm
         // 
         // statusLabel
         // 
-        statusLabel.AutoSize = true;
-        statusLabel.Location = new Point(67, 142);
         statusLabel.Name = "statusLabel";
-        statusLabel.Size = new Size(38, 15);
-        statusLabel.TabIndex = 2;
-        statusLabel.Text = "label1";
+        statusLabel.Size = new Size(82, 17);
+        statusLabel.Text = "Current Status";
         // 
         // timerStart
         // 
@@ -90,13 +90,16 @@ partial class MainForm
         AutoScaleDimensions = new SizeF(7F, 15F);
         AutoScaleMode = AutoScaleMode.Font;
         ClientSize = new Size(800, 450);
-        Controls.Add(statusLabel);
         Controls.Add(statusStrip);
         Controls.Add(webView);
+        Icon = (Icon)resources.GetObject("$this.Icon");
         Name = "MainForm";
-        Text = "Form1";
+        StartPosition = FormStartPosition.CenterScreen;
+        Text = "Resume Boost";
         Load += MainForm_Load;
         ((System.ComponentModel.ISupportInitialize)webView).EndInit();
+        statusStrip.ResumeLayout(false);
+        statusStrip.PerformLayout();
         ResumeLayout(false);
         PerformLayout();
     }
@@ -104,9 +107,9 @@ partial class MainForm
 
     private Microsoft.Web.WebView2.WinForms.WebView2 webView;
     private StatusStrip statusStrip;
-    private Label statusLabel;
     private System.Windows.Forms.Timer timerStart;
     private System.Windows.Forms.Timer timerMain;
     private System.Windows.Forms.Timer timerLong;
     private NotifyIcon notifyIcon;
+    private ToolStripStatusLabel statusLabel;
 }
