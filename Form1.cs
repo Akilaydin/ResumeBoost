@@ -1,5 +1,5 @@
 // ReSharper disable LocalizableElement
-namespace ResumeBoost
+namespace OriApps.ResumeBoost
 {
     using Microsoft.Web.WebView2.Core;
 

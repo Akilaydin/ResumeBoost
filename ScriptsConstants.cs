@@ -1,4 +1,4 @@
-﻿namespace ResumeBoost
+﻿namespace OriApps.ResumeBoost
 {
     public class ScriptsConstants
     {
