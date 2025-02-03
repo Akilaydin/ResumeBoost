@@ -10,18 +10,23 @@
             })();";
 
         public const string FindResumeScript = @"
-            (function check_resumes_col() {
-                let links = document.querySelectorAll('.bloko-link');
-                let filtered = Array.from(links).filter(e => (/Поднять в поиске/i).test(e.textContent));
-                return filtered.length;
-            })();";
+    (function check_resumes_col() {
+        let buttons = document.querySelectorAll('div[class^=""magritte-button-view""]');
+        let filtered = Array.from(buttons).filter(el => 
+            el.innerText.trim() === 'Поднять в поиске'
+        );
+        return filtered.length;
+    })();";
 
         public const string UpdateResumeScript = @"
-            (function update_resumes() {
-                let links = document.querySelectorAll('.bloko-link');
-                let filtered = Array.from(links).filter(e => (/Поднять в поиске/i).test(e.textContent));
-                filtered.forEach(el => { el.click(); });
-                return filtered.length;
-            })();";
+    (function update_resumes() {
+        let buttons = document.querySelectorAll('div[class^=""magritte-button-view""]');
+        let filtered = Array.from(buttons).filter(el => 
+            el.innerText.trim() === 'Поднять в поиске'
+        );
+        filtered.forEach(el => el.click());
+        return filtered.length;
+    })();";
+
     }
 }
