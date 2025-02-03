@@ -82,6 +82,7 @@ partial class MainForm
         // 
         // notifyIcon
         // 
+        notifyIcon.Icon = (Icon)resources.GetObject("notifyIcon.Icon");
         notifyIcon.Text = "Resume Boost";
         notifyIcon.Click += notifyIcon_Click;
         // 

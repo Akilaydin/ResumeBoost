@@ -28,12 +28,14 @@ namespace ResumeBoost
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
+
             if (WindowState == FormWindowState.Minimized)
             {
                 Hide();
                 notifyIcon.Visible = true;
             }
         }
+
 
         private void notifyIcon_Click(object sender, EventArgs e)
         {
