@@ -5,32 +5,11 @@ namespace ResumeBoost
 
     public partial class MainForm : Form
     {
-        private int _step;
-        private string _lastTime = "";
+        private ResumeBoostState _state = ResumeBoostState.Initializing;
+        
+        private string _lastBoostTime = "";
 
         private const string Domain = "https://hh.ru/";
-
-        private const string AuthorizationCheckScript = @"
-    (function check_auth() {
-        let elements = document.querySelectorAll('div');
-        let filtered = Array.from(elements).filter(e => e.textContent.trim() === 'Мои резюме');
-        return filtered.length;
-    })();";
-
-        private const string FindResumeScript = @"
-                    (function check_resumes_col() {
-                        let links = document.querySelectorAll('.bloko-link');
-                        let filtered = Array.from(links).filter(e => (/Поднять в поиске/i).test(e.textContent));
-                        return filtered.length;
-                    })();";
-
-        private const string UpdateResumeScript = @"
-                    (function update_resumes() {
-                        let links = document.querySelectorAll('.bloko-link');
-                        let filtered = Array.from(links).filter(e => (/Поднять в поиске/i).test(e.textContent));
-                        filtered.forEach(el => { el.click(); });
-                        return filtered.length;
-                    })();";
 
         public MainForm()
         {
@@ -38,111 +17,22 @@ namespace ResumeBoost
 
             notifyIcon.Text = Application.ProductName;
             notifyIcon.Visible = false;
-            // Initialize timers (intervals in milliseconds)
+
             timerStart.Interval = 3000;
             timerMain.Interval = 3000;
-            timerLong.Interval = 3600000; // For example, 60 sec wait
+            timerLong.Interval = 3600000;
 
-            // WebView2 events
             webView.CoreWebView2InitializationCompleted += WebView_CoreWebView2InitializationCompleted;
         }
 
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
-
             if (WindowState == FormWindowState.Minimized)
             {
                 Hide();
                 notifyIcon.Visible = true;
             }
-        }
-
-        private async void timerStart_Tick(object? sender,
-            EventArgs e)
-        {
-            var result = await webView.CoreWebView2.ExecuteScriptAsync(AuthorizationCheckScript);
-            // The result is returned as a JSON value (e.g., "0" or "1")
-            var count = int.TryParse(result.Replace("\"", ""), out var n) ? n : 0;
-
-            // Check if we are on the login page
-            if (webView.CoreWebView2.Source.Contains("login"))
-            {
-                statusLabel.Text = "Status: waiting for user authorization...";
-            }
-            else if (count > 0)
-            {
-                statusLabel.Text = "Status: authorization successful. Loading resumes...";
-                timerStart.Stop();
-                timerMain.Start();
-            }
-            else
-            {
-                statusLabel.Text = "Status: waiting for authorization...";
-            }
-        }
-
-        private async void timerMain_Tick(object? sender, EventArgs e)
-        {
-            if (_step == 0)
-            {
-                // Navigate to resumes page
-                webView.CoreWebView2.Navigate(Domain + "applicant/resumes");
-                _step = 1;
-                return;
-            }
-
-            if (_step == 1)
-            {
-                var result = await webView.CoreWebView2.ExecuteScriptAsync(AuthorizationCheckScript);
-                var count = int.TryParse(result.Replace("\"", ""), out var n) ? n : 0;
-
-                if (count > 0)
-                {
-                    statusLabel.Text = "Status: authorization verified.";
-                    _step = 2;
-                }
-
-                return;
-            }
-
-            if (_step == 2)
-            {
-                var result = await webView.CoreWebView2.ExecuteScriptAsync(FindResumeScript);
-                var count = int.TryParse(result.Replace("\"", ""), out var n) ? n : 0;
-
-                if (count > 0)
-                {
-                    statusLabel.Text = $"Status: can boost {count} resumes.";
-                    _step = 3;
-                }
-                else
-                {
-                    statusLabel.Text = "Status: boosting not available. Waiting...";
-                    timerMain.Stop();
-                    timerLong.Start();
-                }
-
-                return;
-            }
-
-            if (_step == 3)
-            {
-                statusLabel.Text = "Status: boosting resumes...";
-
-                await webView.CoreWebView2.ExecuteScriptAsync(UpdateResumeScript);
-                _lastTime = DateTime.Now.ToString("HH:mm");
-                statusLabel.Text = $"Status: resumes boosted at {_lastTime}. Waiting...";
-                timerMain.Stop();
-                _step = 0;
-                timerLong.Start();
-            }
-        }
-
-        private void timerLong_Tick(object? sender, EventArgs e)
-        {
-            timerLong.Stop();
-            timerMain.Start();
         }
 
         private void notifyIcon_Click(object sender, EventArgs e)
@@ -160,8 +50,95 @@ namespace ResumeBoost
             timerStart.Start();
         }
 
-        private void WebView_CoreWebView2InitializationCompleted(object? sender,
-            CoreWebView2InitializationCompletedEventArgs e)
+        private async void timerStart_Tick(object? sender, EventArgs e)
+        {
+            if (await IsUserLoggedIn())
+            {
+                statusLabel.Text = "Status: Authorization successful. Loading resumes...";
+                timerStart.Stop();
+                StartResumeBoostProcess();
+            }
+            else if (webView.CoreWebView2.Source.Contains("login"))
+            {
+                statusLabel.Text = "Status: Waiting for user authorization...";
+            }
+            else
+            {
+                statusLabel.Text = "Status: Still waiting for authorization...";
+            }
+        }
+
+        private async void timerMain_Tick(object? sender, EventArgs e)
+        {
+            switch (_state)
+            {
+                case ResumeBoostState.CheckingAuthorization:
+                    if (await IsUserLoggedIn())
+                    {
+                        statusLabel.Text = "Status: Authorization verified.";
+                        _state = ResumeBoostState.CheckingResumes;
+                    }
+                    break;
+
+                case ResumeBoostState.CheckingResumes:
+                    int availableResumes = await CountAvailableResumes();
+                    if (availableResumes > 0)
+                    {
+                        statusLabel.Text = $"Status: Can boost {availableResumes} resumes.";
+                        _state = ResumeBoostState.BoostingResumes;
+                    }
+                    else
+                    {
+                        statusLabel.Text = "Status: Boosting not available. Waiting...";
+                        timerMain.Stop();
+                        timerLong.Start();
+                    }
+                    break;
+
+                case ResumeBoostState.BoostingResumes:
+                    await BoostResumes();
+                    _lastBoostTime = DateTime.Now.ToString("HH:mm");
+                    statusLabel.Text = $"Status: Resumes boosted at {_lastBoostTime}. Waiting...";
+                    timerMain.Stop();
+                    _state = ResumeBoostState.WaitingForNextCycle;
+                    timerLong.Start();
+                    break;
+            }
+        }
+
+        private void timerLong_Tick(object? sender, EventArgs e)
+        {
+            timerLong.Stop();
+            StartResumeBoostProcess();
+        }
+
+        private async Task<bool> IsUserLoggedIn()
+        {
+            string result = await webView.CoreWebView2.ExecuteScriptAsync(ScriptsConstants.AuthorizationCheckScript);
+            int count = int.TryParse(result.Replace("\"", ""), out var n) ? n : 0;
+            return count > 0;
+        }
+
+        private async Task<int> CountAvailableResumes()
+        {
+            string result = await webView.CoreWebView2.ExecuteScriptAsync(ScriptsConstants.FindResumeScript);
+            return int.TryParse(result.Replace("\"", ""), out var n) ? n : 0;
+        }
+
+        private async Task BoostResumes()
+        {
+            await webView.CoreWebView2.ExecuteScriptAsync(ScriptsConstants.UpdateResumeScript);
+        }
+
+        private void StartResumeBoostProcess()
+        {
+            statusLabel.Text = "Status: Navigating to resumes page...";
+            webView.CoreWebView2.Navigate(Domain + "applicant/resumes");
+            _state = ResumeBoostState.CheckingAuthorization;
+            timerMain.Start();
+        }
+
+        private void WebView_CoreWebView2InitializationCompleted(object? sender, CoreWebView2InitializationCompletedEventArgs e)
         {
             if (!e.IsSuccess)
             {
