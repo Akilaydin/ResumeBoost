@@ -1,0 +1,50 @@
+﻿// ReSharper disable LocalizableElement
+namespace ResumeBoost
+{
+    using Microsoft.Win32;
+
+    public static class StartupHelper
+    {
+        private const string RegistryKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
+        private const string AppName = "ResumeBoost";
+
+        public static void EnableAutoStart()
+        {
+            string exePath = Application.ExecutablePath;
+
+            try
+            {
+                using var key = Registry.CurrentUser.OpenSubKey(RegistryKey, true);
+
+                key?.SetValue(AppName, $"\"{exePath}\"");
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при добавлении в автозапуск: {ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        
+        public static void DisableAutoStart()
+        {
+            try
+            {
+                using var key = Registry.CurrentUser.OpenSubKey(RegistryKey, true);
+
+                key?.DeleteValue(AppName, false);
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при удалении из автозапуска: {ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        public static bool IsAutoStartEnabled()
+        {
+            using var key = Registry.CurrentUser.OpenSubKey(RegistryKey, false);
+
+            return key?.GetValue(AppName) != null;
+        }
+    }
+}

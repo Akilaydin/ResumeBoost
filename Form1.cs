@@ -6,7 +6,7 @@ namespace ResumeBoost
     public partial class MainForm : Form
     {
         private ResumeBoostState _state = ResumeBoostState.Initializing;
-        
+
         private string _lastBoostTime = "";
 
         private const string Domain = "https://hh.ru/";
@@ -23,6 +23,8 @@ namespace ResumeBoost
             timerLong.Interval = 3600000;
 
             webView.CoreWebView2InitializationCompleted += WebView_CoreWebView2InitializationCompleted;
+
+            autoLaunchToolStripMenuItem.Checked = StartupHelper.IsAutoStartEnabled();
         }
 
         protected override void OnResize(EventArgs e)
@@ -145,6 +147,18 @@ namespace ResumeBoost
             if (!e.IsSuccess)
             {
                 MessageBox.Show("WebView2 initialization failed: " + e.InitializationException.Message);
+            }
+        }
+
+        private void autoLaunchToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
+        {
+            if (autoLaunchToolStripMenuItem.Checked)
+            {
+                StartupHelper.EnableAutoStart();
+            }
+            else
+            {
+                StartupHelper.DisableAutoStart();
             }
         }
     }

@@ -37,8 +37,12 @@ partial class MainForm
         timerMain = new System.Windows.Forms.Timer(components);
         timerLong = new System.Windows.Forms.Timer(components);
         notifyIcon = new NotifyIcon(components);
+        menuStrip = new MenuStrip();
+        toolStripMenuItem1 = new ToolStripMenuItem();
+        autoLaunchToolStripMenuItem = new ToolStripMenuItem();
         ((System.ComponentModel.ISupportInitialize)webView).BeginInit();
         statusStrip.SuspendLayout();
+        menuStrip.SuspendLayout();
         SuspendLayout();
         // 
         // webView
@@ -86,14 +90,40 @@ partial class MainForm
         notifyIcon.Text = "Resume Boost";
         notifyIcon.Click += notifyIcon_Click;
         // 
+        // menuStrip
+        // 
+        menuStrip.Items.AddRange(new ToolStripItem[] { toolStripMenuItem1 });
+        menuStrip.Location = new Point(0, 0);
+        menuStrip.Name = "menuStrip";
+        menuStrip.Size = new Size(800, 24);
+        menuStrip.TabIndex = 2;
+        menuStrip.Text = "menuStrip1";
+        // 
+        // toolStripMenuItem1
+        // 
+        toolStripMenuItem1.DropDownItems.AddRange(new ToolStripItem[] { autoLaunchToolStripMenuItem });
+        toolStripMenuItem1.Name = "toolStripMenuItem1";
+        toolStripMenuItem1.Size = new Size(79, 20);
+        toolStripMenuItem1.Text = "Настройки";
+        // 
+        // autoLaunchToolStripMenuItem
+        // 
+        autoLaunchToolStripMenuItem.CheckOnClick = true;
+        autoLaunchToolStripMenuItem.Name = "autoLaunchToolStripMenuItem";
+        autoLaunchToolStripMenuItem.Size = new Size(180, 22);
+        autoLaunchToolStripMenuItem.Text = "Автозапуск";
+        autoLaunchToolStripMenuItem.CheckStateChanged += autoLaunchToolStripMenuItem_CheckStateChanged;
+        // 
         // MainForm
         // 
         AutoScaleDimensions = new SizeF(7F, 15F);
         AutoScaleMode = AutoScaleMode.Font;
         ClientSize = new Size(800, 450);
         Controls.Add(statusStrip);
+        Controls.Add(menuStrip);
         Controls.Add(webView);
         Icon = (Icon)resources.GetObject("$this.Icon");
+        MainMenuStrip = menuStrip;
         Name = "MainForm";
         StartPosition = FormStartPosition.CenterScreen;
         Text = "Resume Boost";
@@ -101,6 +131,8 @@ partial class MainForm
         ((System.ComponentModel.ISupportInitialize)webView).EndInit();
         statusStrip.ResumeLayout(false);
         statusStrip.PerformLayout();
+        menuStrip.ResumeLayout(false);
+        menuStrip.PerformLayout();
         ResumeLayout(false);
         PerformLayout();
     }
@@ -113,4 +145,7 @@ partial class MainForm
     private System.Windows.Forms.Timer timerLong;
     private NotifyIcon notifyIcon;
     private ToolStripStatusLabel statusLabel;
+    private MenuStrip menuStrip;
+    private ToolStripMenuItem toolStripMenuItem1;
+    private ToolStripMenuItem autoLaunchToolStripMenuItem;
 }
