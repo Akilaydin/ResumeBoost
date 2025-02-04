@@ -25,6 +25,15 @@ namespace OriApps.ResumeBoost
             webView.CoreWebView2InitializationCompleted += WebView_CoreWebView2InitializationCompleted;
 
             autoLaunchToolStripMenuItem.Checked = StartupHelper.IsAutoStartEnabled();
+            startMinimizedToolStripMenuItem.Checked = StartupHelper.IsStartMinimizedEnabled();
+
+            if (StartupHelper.IsStartMinimizedEnabled())
+            {
+                WindowState = FormWindowState.Minimized;
+                Hide();
+                notifyIcon.Visible = true;
+                ShowInTaskbar = false;
+            }
         }
 
         protected override void OnResize(EventArgs e)
@@ -35,15 +44,21 @@ namespace OriApps.ResumeBoost
             {
                 Hide();
                 notifyIcon.Visible = true;
+                ShowInTaskbar = false;
             }
         }
 
-
         private void notifyIcon_Click(object sender, EventArgs e)
         {
+            if (e is MouseEventArgs args && args.Button != MouseButtons.Left)
+            {
+                return;
+            }
+            
             Show();
             WindowState = FormWindowState.Normal;
             notifyIcon.Visible = false;
+            ShowInTaskbar = true;
         }
 
         private async void MainForm_Load(object sender, EventArgs e)
@@ -115,6 +130,31 @@ namespace OriApps.ResumeBoost
             timerLong.Stop();
             StartResumeBoostProcess();
         }
+        
+        private void WebView_CoreWebView2InitializationCompleted(object? sender, CoreWebView2InitializationCompletedEventArgs e)
+        {
+            if (!e.IsSuccess)
+            {
+                MessageBox.Show("WebView2 initialization failed: " + e.InitializationException.Message);
+            }
+        }
+
+        private void autoLaunchToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
+        {
+            if (autoLaunchToolStripMenuItem.Checked)
+            {
+                StartupHelper.EnableAutoStart();
+            }
+            else
+            {
+                StartupHelper.DisableAutoStart();
+            }
+        }
+
+        private void startMinimizedToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
+        {
+            StartupHelper.SetStartMinimized(startMinimizedToolStripMenuItem.Checked);
+        }
 
         private async Task<bool> IsUserLoggedIn()
         {
@@ -140,26 +180,6 @@ namespace OriApps.ResumeBoost
             webView.CoreWebView2.Navigate(Domain + "applicant/resumes");
             _state = ResumeBoostState.CheckingAuthorization;
             timerMain.Start();
-        }
-
-        private void WebView_CoreWebView2InitializationCompleted(object? sender, CoreWebView2InitializationCompletedEventArgs e)
-        {
-            if (!e.IsSuccess)
-            {
-                MessageBox.Show("WebView2 initialization failed: " + e.InitializationException.Message);
-            }
-        }
-
-        private void autoLaunchToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
-        {
-            if (autoLaunchToolStripMenuItem.Checked)
-            {
-                StartupHelper.EnableAutoStart();
-            }
-            else
-            {
-                StartupHelper.DisableAutoStart();
-            }
         }
     }
 }

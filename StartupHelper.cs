@@ -7,7 +7,10 @@ namespace OriApps.ResumeBoost
     {
         private const string RegistryKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
         private const string AppName = "ResumeBoost";
-
+        
+        private const string MinimizedRegistryKey = @"Software\" + AppName;
+        private const string MinimizedValueName = "StartMinimized";
+        
         public static void EnableAutoStart()
         {
             string exePath = Application.ExecutablePath;
@@ -45,6 +48,20 @@ namespace OriApps.ResumeBoost
             using var key = Registry.CurrentUser.OpenSubKey(RegistryKey, false);
 
             return key?.GetValue(AppName) != null;
+        }
+
+        public static void SetStartMinimized(bool value)
+        {
+            using var key = Registry.CurrentUser.CreateSubKey(MinimizedRegistryKey);
+
+            key.SetValue(MinimizedValueName, value ? 1 : 0);
+        }
+        
+        public static bool IsStartMinimizedEnabled()
+        {
+            using var key = Registry.CurrentUser.OpenSubKey(MinimizedRegistryKey);
+
+            return key?.GetValue(MinimizedValueName, 0) is 1;
         }
     }
 }

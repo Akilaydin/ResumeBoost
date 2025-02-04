@@ -40,6 +40,7 @@ partial class MainForm
         menuStrip = new MenuStrip();
         toolStripMenuItem1 = new ToolStripMenuItem();
         autoLaunchToolStripMenuItem = new ToolStripMenuItem();
+        startMinimizedToolStripMenuItem = new ToolStripMenuItem();
         ((System.ComponentModel.ISupportInitialize)webView).BeginInit();
         statusStrip.SuspendLayout();
         menuStrip.SuspendLayout();
@@ -101,7 +102,7 @@ partial class MainForm
         // 
         // toolStripMenuItem1
         // 
-        toolStripMenuItem1.DropDownItems.AddRange(new ToolStripItem[] { autoLaunchToolStripMenuItem });
+        toolStripMenuItem1.DropDownItems.AddRange(new ToolStripItem[] { autoLaunchToolStripMenuItem, startMinimizedToolStripMenuItem });
         toolStripMenuItem1.Name = "toolStripMenuItem1";
         toolStripMenuItem1.Size = new Size(79, 20);
         toolStripMenuItem1.Text = "Настройки";
@@ -110,9 +111,17 @@ partial class MainForm
         // 
         autoLaunchToolStripMenuItem.CheckOnClick = true;
         autoLaunchToolStripMenuItem.Name = "autoLaunchToolStripMenuItem";
-        autoLaunchToolStripMenuItem.Size = new Size(180, 22);
+        autoLaunchToolStripMenuItem.Size = new Size(193, 22);
         autoLaunchToolStripMenuItem.Text = "Автозапуск";
         autoLaunchToolStripMenuItem.CheckStateChanged += autoLaunchToolStripMenuItem_CheckStateChanged;
+        // 
+        // startMinimizedToolStripMenuItem
+        // 
+        startMinimizedToolStripMenuItem.CheckOnClick = true;
+        startMinimizedToolStripMenuItem.Name = "startMinimizedToolStripMenuItem";
+        startMinimizedToolStripMenuItem.Size = new Size(193, 22);
+        startMinimizedToolStripMenuItem.Text = "Запускать свернутым";
+        startMinimizedToolStripMenuItem.CheckStateChanged += startMinimizedToolStripMenuItem_CheckStateChanged;
         // 
         // MainForm
         // 
@@ -148,4 +157,5 @@ partial class MainForm
     private MenuStrip menuStrip;
     private ToolStripMenuItem toolStripMenuItem1;
     private ToolStripMenuItem autoLaunchToolStripMenuItem;
+    private ToolStripMenuItem startMinimizedToolStripMenuItem;
 }
