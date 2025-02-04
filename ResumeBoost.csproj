@@ -6,7 +6,12 @@
         <Nullable>enable</Nullable>
         <UseWindowsForms>true</UseWindowsForms>
         <ImplicitUsings>enable</ImplicitUsings>
+        <ApplicationIcon>resume.ico</ApplicationIcon>
     </PropertyGroup>
+
+    <ItemGroup>
+      <Content Include="resume.ico" />
+    </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2957.106" />
