@@ -48,17 +48,22 @@ namespace OriApps.ResumeBoost
             }
         }
 
+        private void ShowMainWindow()
+        {
+            Show();
+            WindowState = FormWindowState.Normal;
+            notifyIcon.Visible = false;
+            ShowInTaskbar = true;
+        }
+
         private void notifyIcon_Click(object sender, EventArgs e)
         {
             if (e is MouseEventArgs args && args.Button != MouseButtons.Left)
             {
                 return;
             }
-            
-            Show();
-            WindowState = FormWindowState.Normal;
-            notifyIcon.Visible = false;
-            ShowInTaskbar = true;
+
+            ShowMainWindow();
         }
 
         private async void MainForm_Load(object sender, EventArgs e)
@@ -77,13 +82,21 @@ namespace OriApps.ResumeBoost
                 timerStart.Stop();
                 StartResumeBoostProcess();
             }
-            else if (webView.CoreWebView2.Source.Contains("login"))
-            {
-                statusLabel.Text = "Status: Waiting for user authorization...";
-            }
             else
             {
-                statusLabel.Text = "Status: Still waiting for authorization...";
+                if (WindowState == FormWindowState.Minimized)
+                {
+                    ShowMainWindow();
+                }
+
+                if (webView.CoreWebView2.Source.Contains("login"))
+                {
+                    statusLabel.Text = "Status: Waiting for user authorization...";
+                }
+                else
+                {
+                    statusLabel.Text = "Status: Still waiting for authorization...";
+                }
             }
         }
 
@@ -96,6 +109,11 @@ namespace OriApps.ResumeBoost
                     {
                         statusLabel.Text = "Status: Authorization verified.";
                         _state = ResumeBoostState.CheckingResumes;
+                    }
+                    else
+                    {
+                        ShowMainWindow();
+                        statusLabel.Text = "Status: Authorization required.";
                     }
                     break;
 
