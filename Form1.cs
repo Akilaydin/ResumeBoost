@@ -89,14 +89,9 @@ namespace OriApps.ResumeBoost
                     ShowMainWindow();
                 }
 
-                if (webView.CoreWebView2.Source.Contains("login"))
-                {
-                    statusLabel.Text = "Status: Waiting for user authorization...";
-                }
-                else
-                {
-                    statusLabel.Text = "Status: Still waiting for authorization...";
-                }
+                statusLabel.Text = webView.CoreWebView2.Source.Contains("login") 
+                    ? "Status: Waiting for user authorization..." 
+                    : "Status: Still waiting for authorization...";
             }
         }
 
