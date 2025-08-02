@@ -64,7 +64,10 @@ namespace OriApps.ResumeBoost
             if (m.Msg == WM_SHOWMAIN)
             {
                 ShowMainWindow();
+                
+                Activate();
             }
+            
             base.WndProc(ref m);
         }
 

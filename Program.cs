@@ -1,11 +1,9 @@
 using System.Runtime.InteropServices;
-using System.Threading;
 
 namespace OriApps.ResumeBoost;
 
 static class Program
 {
-
     [DllImport("user32.dll", SetLastError = true)]
     private static extern IntPtr FindWindow(string? lpClassName, string? lpWindowName);
 
@@ -18,14 +16,8 @@ static class Program
     [STAThread]
     static void Main()
     {
-        using Mutex mutex = new Mutex(true, "OriApps.ResumeBoost.Mutex", out bool createdNew);
-        if (!createdNew)
+        if (TryPreventSecondInstance())
         {
-            IntPtr hWnd = FindWindow(null, "Resume Boost");
-            if (hWnd != IntPtr.Zero)
-            {
-                PostMessage(hWnd, MainForm.WM_SHOWMAIN, IntPtr.Zero, IntPtr.Zero);
-            }
             return;
         }
 
@@ -33,5 +25,27 @@ static class Program
         // see https://aka.ms/applicationconfiguration.
         ApplicationConfiguration.Initialize();
         Application.Run(new MainForm());
+    }
+
+    private static bool TryPreventSecondInstance()
+    {
+        using var mutex = new Mutex(true, "OriApps.ResumeBoost.Mutex", out bool createdNew);
+
+        if (!createdNew)
+        {
+            // Find the existing window by its title
+            IntPtr hWnd = FindWindow(null, "Resume Boost");
+    
+            if (hWnd != IntPtr.Zero)
+            {
+                // Send a custom message to bring the existing window to the foreground
+                PostMessage(hWnd, MainForm.WM_SHOWMAIN, IntPtr.Zero, IntPtr.Zero);
+            }
+    
+            // Exit the current application instance
+            return true;
+        }
+
+        return false;
     }
 }
