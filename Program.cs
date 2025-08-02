@@ -4,12 +4,14 @@ namespace OriApps.ResumeBoost;
 
 static class Program
 {
-    [DllImport("user32.dll", SetLastError = true)]
+    [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
     private static extern IntPtr FindWindow(string? lpClassName, string? lpWindowName);
 
     [DllImport("user32.dll")]
     private static extern bool PostMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
-
+    
+    private static Mutex? _mutex;
+    
     /// <summary>
     ///  The main entry point for the application.
     /// </summary>
@@ -29,20 +31,16 @@ static class Program
 
     private static bool TryPreventSecondInstance()
     {
-        using var mutex = new Mutex(true, "OriApps.ResumeBoost.Mutex", out bool createdNew);
+        _mutex = new Mutex(true, "OriApps.ResumeBoost.Mutex", out bool createdNew);
 
         if (!createdNew)
         {
-            // Find the existing window by its title
             IntPtr hWnd = FindWindow(null, "Resume Boost");
-    
             if (hWnd != IntPtr.Zero)
             {
-                // Send a custom message to bring the existing window to the foreground
                 PostMessage(hWnd, MainForm.WM_SHOWMAIN, IntPtr.Zero, IntPtr.Zero);
             }
-    
-            // Exit the current application instance
+            
             return true;
         }
 

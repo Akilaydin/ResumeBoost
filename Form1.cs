@@ -57,6 +57,9 @@ namespace OriApps.ResumeBoost
             WindowState = FormWindowState.Normal;
             notifyIcon.Visible = false;
             ShowInTaskbar = true;
+
+            TopMost = true;
+            TopMost = false;
         }
 
         protected override void WndProc(ref Message m)
