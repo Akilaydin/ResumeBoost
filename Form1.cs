@@ -9,6 +9,9 @@ namespace OriApps.ResumeBoost
 
         private string _lastBoostTime = "";
 
+        private const int WM_USER = 0x0400;
+        internal const int WM_SHOWMAIN = WM_USER + 1;
+
         private const string Domain = "https://hh.ru/";
 
         public MainForm()
@@ -54,6 +57,21 @@ namespace OriApps.ResumeBoost
             WindowState = FormWindowState.Normal;
             notifyIcon.Visible = false;
             ShowInTaskbar = true;
+
+            TopMost = true;
+            TopMost = false;
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == WM_SHOWMAIN)
+            {
+                ShowMainWindow();
+                
+                Activate();
+            }
+            
+            base.WndProc(ref m);
         }
 
         private void notifyIcon_Click(object sender, EventArgs e)
