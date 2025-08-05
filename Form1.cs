@@ -29,12 +29,13 @@ namespace OriApps.ResumeBoost
 
             autoLaunchToolStripMenuItem.Checked = StartupHelper.IsAutoStartEnabled();
             startMinimizedToolStripMenuItem.Checked = StartupHelper.IsStartMinimizedEnabled();
+            hideTrayToolStripMenuItem.Checked = StartupHelper.IsTrayIconHidden();
 
             if (StartupHelper.IsStartMinimizedEnabled())
             {
                 WindowState = FormWindowState.Minimized;
                 Hide();
-                notifyIcon.Visible = true;
+                notifyIcon.Visible = !hideTrayToolStripMenuItem.Checked;
                 ShowInTaskbar = false;
             }
         }
@@ -46,7 +47,7 @@ namespace OriApps.ResumeBoost
             if (WindowState == FormWindowState.Minimized)
             {
                 Hide();
-                notifyIcon.Visible = true;
+                notifyIcon.Visible = !hideTrayToolStripMenuItem.Checked;
                 ShowInTaskbar = false;
             }
         }
@@ -212,10 +213,22 @@ namespace OriApps.ResumeBoost
             _state = ResumeBoostState.CheckingAuthorization;
             timerMain.Start();
         }
-
-        private void hideTrayToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
+        
+        private void hideTrayToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            StartupHelper.SetTrayIconHidden(hideTrayToolStripMenuItem.Checked);
 
+            notifyIcon.Visible = WindowState == FormWindowState.Minimized && !hideTrayToolStripMenuItem.Checked;
+
+            if (hideTrayToolStripMenuItem.Checked)
+            {
+                MessageBox.Show(
+                    "Для повторного отображения окна достаточно заново запустить .exe файл\n" +
+                    "Новый экземпляр не откроется, а активирует существующий.",
+                    "Информация",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
         }
     }
 }

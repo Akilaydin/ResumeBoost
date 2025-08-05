@@ -126,10 +126,11 @@ partial class MainForm
         // 
         // hideTrayToolStripMenuItem
         // 
+        hideTrayToolStripMenuItem.CheckOnClick = true;
         hideTrayToolStripMenuItem.Name = "hideTrayToolStripMenuItem";
         hideTrayToolStripMenuItem.Size = new Size(193, 22);
         hideTrayToolStripMenuItem.Text = "Не показывать в трее";
-        hideTrayToolStripMenuItem.CheckStateChanged += hideTrayToolStripMenuItem_CheckStateChanged;
+        hideTrayToolStripMenuItem.Click += hideTrayToolStripMenuItem_Click;
         // 
         // MainForm
         // 
