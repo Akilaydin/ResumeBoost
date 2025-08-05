@@ -10,6 +10,7 @@ namespace OriApps.ResumeBoost
         
         private const string MinimizedRegistryKey = @"Software\" + AppName;
         private const string MinimizedValueName = "StartMinimized";
+        private const string HideTrayValueName = "HideTray";
         
         public static void EnableAutoStart()
         {
@@ -62,6 +63,20 @@ namespace OriApps.ResumeBoost
             using var key = Registry.CurrentUser.OpenSubKey(MinimizedRegistryKey);
 
             return key?.GetValue(MinimizedValueName, 0) is 1;
+        }
+
+        public static void SetTrayIconHidden(bool value)
+        {
+            using var key = Registry.CurrentUser.CreateSubKey(MinimizedRegistryKey);
+
+            key.SetValue(HideTrayValueName, value ? 1 : 0);
+        }
+
+        public static bool IsTrayIconHidden()
+        {
+            using var key = Registry.CurrentUser.OpenSubKey(MinimizedRegistryKey);
+
+            return key?.GetValue(HideTrayValueName, 0) is 1;
         }
     }
 }
