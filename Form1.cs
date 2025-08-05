@@ -67,10 +67,10 @@ namespace OriApps.ResumeBoost
             if (m.Msg == WM_SHOWMAIN)
             {
                 ShowMainWindow();
-                
+
                 Activate();
             }
-            
+
             base.WndProc(ref m);
         }
 
@@ -107,8 +107,8 @@ namespace OriApps.ResumeBoost
                     ShowMainWindow();
                 }
 
-                statusLabel.Text = webView.CoreWebView2.Source.Contains("login") 
-                    ? "Status: Waiting for user authorization..." 
+                statusLabel.Text = webView.CoreWebView2.Source.Contains("login")
+                    ? "Status: Waiting for user authorization..."
                     : "Status: Still waiting for authorization...";
             }
         }
@@ -161,7 +161,7 @@ namespace OriApps.ResumeBoost
             timerLong.Stop();
             StartResumeBoostProcess();
         }
-        
+
         private void WebView_CoreWebView2InitializationCompleted(object? sender, CoreWebView2InitializationCompletedEventArgs e)
         {
             if (!e.IsSuccess)
@@ -211,6 +211,11 @@ namespace OriApps.ResumeBoost
             webView.CoreWebView2.Navigate(Domain + "applicant/resumes");
             _state = ResumeBoostState.CheckingAuthorization;
             timerMain.Start();
+        }
+
+        private void hideTrayToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
