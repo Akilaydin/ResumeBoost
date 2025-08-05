@@ -213,8 +213,8 @@ namespace OriApps.ResumeBoost
             _state = ResumeBoostState.CheckingAuthorization;
             timerMain.Start();
         }
-
-        private void hideTrayToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
+        
+        private void hideTrayToolStripMenuItem_Click(object sender, EventArgs e)
         {
             StartupHelper.SetTrayIconHidden(hideTrayToolStripMenuItem.Checked);
 
@@ -223,7 +223,8 @@ namespace OriApps.ResumeBoost
             if (hideTrayToolStripMenuItem.Checked)
             {
                 MessageBox.Show(
-                    "Для повторного отображения окна достаточно заново запустить .exe; новый экземпляр не откроется, а активирует существующий.",
+                    "Для повторного отображения окна достаточно заново запустить .exe файл\n" +
+                    "Новый экземпляр не откроется, а активирует существующий.",
                     "Информация",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
