@@ -55,7 +55,7 @@ partial class MainForm
         webView.Dock = DockStyle.Fill;
         webView.Location = new Point(0, 0);
         webView.Name = "webView";
-        webView.Size = new Size(800, 450);
+        webView.Size = new Size(1484, 450);
         webView.TabIndex = 0;
         webView.ZoomFactor = 1D;
         // 
@@ -64,7 +64,7 @@ partial class MainForm
         statusStrip.Items.AddRange(new ToolStripItem[] { statusLabel });
         statusStrip.Location = new Point(0, 428);
         statusStrip.Name = "statusStrip";
-        statusStrip.Size = new Size(800, 22);
+        statusStrip.Size = new Size(1484, 22);
         statusStrip.TabIndex = 1;
         statusStrip.Text = "statusStrip1";
         // 
@@ -97,7 +97,7 @@ partial class MainForm
         menuStrip.Items.AddRange(new ToolStripItem[] { toolStripMenuItem1 });
         menuStrip.Location = new Point(0, 0);
         menuStrip.Name = "menuStrip";
-        menuStrip.Size = new Size(800, 24);
+        menuStrip.Size = new Size(1484, 24);
         menuStrip.TabIndex = 2;
         menuStrip.Text = "menuStrip1";
         // 
@@ -136,7 +136,7 @@ partial class MainForm
         // 
         AutoScaleDimensions = new SizeF(7F, 15F);
         AutoScaleMode = AutoScaleMode.Font;
-        ClientSize = new Size(800, 450);
+        ClientSize = new Size(1484, 450);
         Controls.Add(statusStrip);
         Controls.Add(menuStrip);
         Controls.Add(webView);
@@ -145,6 +145,7 @@ partial class MainForm
         Name = "MainForm";
         StartPosition = FormStartPosition.CenterScreen;
         Text = "Resume Boost";
+        WindowState = FormWindowState.Maximized;
         Load += MainForm_Load;
         ((System.ComponentModel.ISupportInitialize)webView).EndInit();
         statusStrip.ResumeLayout(false);
